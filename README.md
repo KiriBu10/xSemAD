@@ -16,6 +16,10 @@ Use at least ![python](https://img.shields.io/badge/python-black?logo=python&lab
 ```sh
 pip install -r requirements.txt
 ```
+### To apply SVM or BERT from Caspary et al. 2023
+Use at least ![python](https://img.shields.io/badge/python-black?logo=python&label=3.7.16)
+
+
 
 
 ## Project Organization
