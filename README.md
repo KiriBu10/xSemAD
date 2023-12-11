@@ -7,6 +7,7 @@ The identification of undesirable behavior in event logs is an important aspect 
 
 ### Built with
 * ![platform](https://img.shields.io/badge/platform-linux-brightgreen)
+* ![GPU](https://img.shields.io/badge/GPU-2%20x%20Nvidia%20RTX%20A6000-red)
 * ![python](https://img.shields.io/badge/python-black?logo=python&label=3.8.13)
 * ![python](https://img.shields.io/badge/python-black?logo=python&label=3.7.16)
 
