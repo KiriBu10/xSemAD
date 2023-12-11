@@ -28,7 +28,7 @@ or
 ```sh
 pip install -r requirements_gpu.txt
 ```
-Look [here]([https://www.google.com](https://gitlab.uni-mannheim.de/processanalytics/ml-semantic-anomaly-dection)) for more details.
+Look [here](https://gitlab.uni-mannheim.de/processanalytics/ml-semantic-anomaly-dection) for more details.
 
 
 ## Project Organization
