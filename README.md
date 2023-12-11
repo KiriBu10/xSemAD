@@ -15,7 +15,7 @@ The identification of undesirable behavior in event logs is an important aspect 
 ### To apply our approach (xSemAD)
 Use at least ![python](https://img.shields.io/badge/python-black?logo=python&label=3.8.13)
 1. clone this project <code>git clone</code> to get the repository
-2. install the requirements with 
+2. install the requirements in the constraints-transformer folder with 
 ```sh
 pip install -r requirements.txt
 ```
