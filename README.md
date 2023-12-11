@@ -7,6 +7,7 @@ The identification of undesirable behavior in event logs is an important aspect 
 
 ### Built with
 * ![python](https://img.shields.io/badge/python-black?logo=python&label=3.8.13)
+* ![python](https://img.shields.io/badge/python-black?logo=python&label=3.7.16)
 
 ## Requirements
 ### To apply our approach (xSemAD)
