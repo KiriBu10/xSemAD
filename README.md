@@ -9,7 +9,7 @@ The identification of undesirable behavior in event logs is an important aspect 
 * ![python](https://img.shields.io/badge/python-black?logo=python&label=3.8.13)
 
 ## Requirements
-### To apply the our approach (xSemAD)
+### To apply our approach (xSemAD)
 1. clone this project <code>git clone</code> to get the repository
 2. install the requirements with 
 ```sh
