@@ -2,7 +2,10 @@
 This repository contains the prototype of the approach, evaluation, and data as described in xSemAD: Explainable Semantic Anomaly Detection in Event Logs Using Sequence-to-Sequence Models. Under submission for the 2024 International Conference on Business Process Management (BPM 2024). 
 
 ## About the project
-The identification of undesirable behavior in event logs is an important aspect of process mining that is often addressed by anomaly detection methods.  Traditional anomaly detection methods tend to focus on statistically rare behavior and neglect the subtle difference between rarity and undesirability. The introduction of semantic anomaly detection has opened a promising avenue by identifying semantically deviant behavior. This work addresses a gap in semantic anomaly detection, which typically indicates the occurrence of an anomaly without explaining the nature of the anomaly. We propose xSemAD, an approach that uses a sequence-to-sequence model to go beyond pure identification and provides extended explanations. Our model generates constraints from an event log and compares them with the observed event log. This approach not only helps understand the specifics of the undesired behavior, but also facilitates targeted corrective actions. Our experiments demonstrate the effectiveness of the proposed approach by showing that it is able to generate relevant constraints and outperform existing state-of-the-art semantic anomaly detection methods. This advance promises to refine the interpretability and practical utility of semantic anomaly detection in process mining and provide a more comprehensive solution for detecting and understanding undesirable behavior.
+The identification of undesirable behavior in event logs is an important aspect of process mining that is often addressed by anomaly detection methods. 
+Traditional anomaly detection methods tend to focus on statistically rare behavior and neglect the subtle difference between rarity and undesirability. The introduction of semantic anomaly detection has opened a promising avenue by identifying semantically deviant behavior.
+This work addresses a gap in semantic anomaly detection, which typically indicates the occurrence of an anomaly without explaining the nature of the anomaly. We propose xSemAD, an approach that uses a sequence-to-sequence (seq2seq) model to go beyond pure identification and provides extended explanations. In essence, our approach learns constraints from a given process model repository and then checks whether these constraints hold in the considered event log. This approach not only helps understand the specifics of the undesired behavior, but also facilitates targeted corrective actions.
+Our experiments demonstrate the effectiveness of the proposed approach by showing that it is able to generate relevant constraints and outperform existing state-of-the-art semantic anomaly detection methods. This advance promises to refine the interpretability and practical utility of semantic anomaly detection in process mining and provide a more comprehensive solution for detecting and understanding undesirable behavior.
 
 ### Built with
 * ![platform](https://img.shields.io/badge/platform-linux-brightgreen)
@@ -18,6 +21,7 @@ Use at least ![python](https://img.shields.io/badge/python-black?logo=python&lab
 ```sh
 pip install -r requirements.txt
 ```
+Make sure to adapt all path file names to your needs.
 ### To apply SVM or BERT from Caspary et al. 2023
 Use at least ![python](https://img.shields.io/badge/python-black?logo=python&label=3.7.16)
 1. clone this project <code>git clone</code> to get the repository
@@ -30,20 +34,36 @@ or
 pip install -r requirements_gpu.txt
 ```
 Look [here](https://gitlab.uni-mannheim.de/processanalytics/ml-semantic-anomaly-dection) for more details.
+Add the files from the Caspary2023 folder to that repository. Make sure to adapt all path file names to your needs.
 
 
 ## Project Organization
-
-
+    ├── caspary2023                        <- Source code for SVM/BERT.
+    ├── constraints-transformer
+    │   ├── conversion                     <- Contains bpmn analyzer, json2petrinet, and petrinet analyzer.    
+    │   ├── evaluation                     <- contains utility functions for evaluation.
+    │   ├── labelparser                    <- contains utility functions for label parsing.
+    │   ├── results                        <- Figures for the paper.
+    │   ├ 00_run_preprocess_sapsam.py                    <- Script to preprocess the sapsam dataset.
+    │   ├ 01_run_paper_preprocessing_data.py             <- Script to generate train,test, and validatrion set
+    │   ├ 02_run_training.py                             <- Script to fine-tune FLAN-T5 
+    │   ├ 04_run_generate_predictions_testset.py         <- Script to generate xSemAD predictions on testset 
+    │   ├ 04_run_generate_predictions_validationset.py   <- Script to generate xSemAD predictions on validationset 
+    │   ├ 08_run_declare_miner.py                        <- Script to run declare miner
+    │   ├ 09_run_minerful.py                             <- Script to run MINERful
+    │   ├ 10_paper_plots.ipynb                           <- Script to generate the PAPER PLOTS
+    │   ├ 10_paper_paper_results.ipynb                   <- Script go generate the PAPER RESULTS
+    │   ├ config.py                                      <- config file 
+    │   ├ requirements.txt                               <- requirements file
+    ├── README.md                           <- The top-level README for users of this project.
+    ├── LICENSE                             <- License that applies to the source code in this repository.
+    
 
 ## Contact
 
-Kiran Busch - kiran.busch@klu.org
 
 ## Find a bug?
 If you found an issue or would like to submit an improvement to this project, please contact the authors. 
 
 
-# Date of release
-The completion of the repository is scheduled for December 11th, 2023.
 

@@ -1,6 +1,11 @@
 from more_itertools import chunked
 import numpy as np
 from labelparser.label_utils import constraint_splitter
+import os
+import json
+import pickle
+from tqdm import tqdm
+import re
 
 def prediction_cleaning(p):
     p = p.replace("<pad>","").replace("</s>","")
@@ -86,7 +91,7 @@ def sort_constraints(constraints_list,correct_spelling=False, remove_duplicates=
         constraint_type, labels = constraint_splitter(c, correct_spelling=correct_spelling)
         if labels == None:
             return result
-        labels = [i.strip() for i in labels]
+        labels = [i.strip().replace('  ',' ').lower() for i in labels]
         if constraint_type.lower() in ['coice', 'co-existence','exclusive choice']:
             labels.sort()
         result.append(f'{constraint_type}['+ ', '.join(labels) +']')
@@ -127,3 +132,257 @@ def sort_constraints_for_eval(constraints_list,correct_spelling=False, remove_du
     if remove_duplicates:
         result = list(set(result))
     return result
+
+
+
+def format_minerful_constraints(mineful_constraints_json):
+    constraints_of_interest_encoder = {'Precedence':'Precedence',
+                                        'AlternatePrecedence':'Alternate Precedence',
+                                        'CoExistence':'Co-Existence',
+                                        'Response':'Response',
+                                        'AlternateResponse':'Alternate Response',
+                                        'Succession':'Succession',
+                                        'AlternateSuccession':'Alternate Succession',
+                                        'Init':'Init',
+                                        'End':'End',
+                                        'Choice':'Choice', # not defined in minerful
+                                        'ExclusiveChoice':'Exclusive Choice' # not defined in minerful
+                                        }
+
+    def format_constraints_minerful(constraint_dict):
+        # Extract the 'template' value
+        template = constraint_dict['template']
+        # Extract the 'parameters' list, flatten it, and join each parameter with a comma
+        parameters = ', '.join([item for sublist in constraint_dict['parameters'] for item in sublist])
+        # Combine the template and parameters into the desired format
+        formatted_string = f"{constraints_of_interest_encoder[template]}[{parameters}]"
+        return formatted_string
+
+    constraints_minerful = []
+    for constraint in mineful_constraints_json['constraints']:
+        constraint_type = constraint['template']
+        if constraint_type in constraints_of_interest_encoder.keys():
+            #print(constraint)
+            #print(format_constraint_minerful(constraint))
+            constraints_minerful.append(format_constraints_minerful(constraint))
+    return constraints_minerful
+
+def calculate_precision_recall_f1(true_list, prediction_list):
+    intersection_num = len(list(set(true_list).intersection(set(prediction_list))))
+    recall = intersection_num/len(true_list)
+    if len(prediction_list)!=0:
+        precision = intersection_num/len(prediction_list)
+        if (precision+recall)!= 0:
+            f1 = (2*precision*recall)/(precision+recall)
+            return precision, recall, f1
+        return precision, recall, 0
+    else:
+        precision = 0
+        if (precision+recall)!= 0:
+            f1 = (2*precision*recall)/(precision+recall)
+            return precision, recall, f1
+        return precision, recall, 0
+
+
+
+
+def evaluate_constraints_old(test_case_names, 
+                         path_to_true_constraints, 
+                         path_to_pred_constraints,
+                         MODEL_NAME=None,
+                         group_constraint_types=None,
+                         unseen_model_case_names=None,
+                         xsemad_threshold=None,
+                         model_type='MINERFUL',
+                         constraints_of_interest = ['Alternate Precedence',
+                                                    'Alternate Response',
+                                                    'Alternate Succession',
+                                                    'Choice',
+                                                    'Co-Existence',
+                                                    'End',
+                                                    'Exclusive Choice',
+                                                    'Init',
+                                                    'Precedence',
+                                                    'Response',
+                                                    'Succession']):
+    evaluation_results = []
+
+    pred_file_type = os.listdir(path_to_pred_constraints)[0].split('.')[1]
+
+    if unseen_model_case_names:
+        test_case_names=[item for item in unseen_model_case_names if item in test_case_names]
+    for model_case_name in tqdm(test_case_names, desc='process evaluation'):
+        # Load true constraints
+        with open(f'{path_to_true_constraints}/{model_case_name}.CONSTRAINTS.pkl','rb') as f:
+            true_constraints = pickle.load(f)
+            all_constraint_types_in_model = list(set([i.split('[')[0] for i in true_constraints]))
+            true_constraints = sort_constraints(true_constraints, remove_duplicates=True)
+        # Load predictions
+        # PREDICTION
+        path_to_pred_file = f'{path_to_pred_constraints}/{model_case_name}.{pred_file_type}'
+        if pred_file_type in ['json']:
+            with open(path_to_pred_file) as f:
+                mineful_constraints_json=json.load(f)
+            pred_pairs_temp = sort_constraints(format_minerful_constraints(mineful_constraints_json), remove_duplicates=True)
+        if pred_file_type in ['pkl','pickle']:
+            with open(path_to_pred_file, 'rb') as f:
+                pred_pairs_temp = pickle.load(f)#pred_pairs_temp = sort_constraints(pickle.load(f), remove_duplicates=True)
+                # For XSEMAD, filter predictions based on the threshold
+                if xsemad_threshold is not None:
+                    pred_pairs_temp = [item for sublist in pred_pairs_temp for item in sublist[1]]
+                    pred_pairs_temp = [i for i in pred_pairs_temp if i[1] > xsemad_threshold]  # Apply threshold filtering
+            # Assuming pred_pairs_temp structure adjustment for XSEMAD predictions is needed
+            pred_pairs_temp = sort_constraints([i[0] for i in pred_pairs_temp], remove_duplicates=True) if xsemad_threshold is not None else sort_constraints(pred_pairs_temp, remove_duplicates=True)
+
+
+        if group_constraint_types is not None:
+            true_pairs=[]
+            pred_pairs=[]
+            for c in constraints_of_interest:
+                if c in group_constraint_types:
+                    true_pairs_ = [i.split('[')[1][:-1] for i in true_constraints if i.startswith(c+ '[') ]
+                    true_pairs+=true_pairs_
+                    pred_pairs_ = [i.split('[')[1][:-1] for i in pred_pairs_temp if i.startswith(c+ '[')] 
+                    pred_pairs+=pred_pairs_
+            if len(true_pairs)>0:
+                precision, recall, f1 = calculate_precision_recall_f1(true_list=list(set(true_pairs)), prediction_list=list(set(pred_pairs)))
+                evaluation_results.append({'constraint_type':', '.join(group_constraint_types), 'model':MODEL_NAME, 'precision':precision,'recall':recall,'f1':f1, 'case_name':model_case_name})
+        else:
+            for c in constraints_of_interest:
+                true_pairs=[]
+                pred_pairs=[]
+                if c in all_constraint_types_in_model:
+                    true_pairs = [i.split('[')[1][:-1] for i in true_constraints if i.startswith(c+ '[') ]
+                    pred_pairs = [i.split('[')[1][:-1] for i in pred_pairs_temp if i.startswith(c+ '[')] 
+                    if len(true_pairs)>0:
+                        precision, recall, f1 = calculate_precision_recall_f1(true_list=list(set(true_pairs)), prediction_list=list(set(pred_pairs)))
+                        evaluation_results.append({'constraint_type':c, 'model':MODEL_NAME, 'precision':precision,'recall':recall,'f1':f1, 'case_name':model_case_name})
+    return evaluation_results
+
+NON_ALPHANUM = re.compile('[^a-z,A-Z]')
+CAMEL_PATTERN_1 = re.compile('(.)([A-Z][a-z]+)')
+CAMEL_PATTERN_2 = re.compile('([a-z0-9])([A-Z])')
+def _camel_to_white(label):
+    label = CAMEL_PATTERN_1.sub(r'\1 \2', label)
+    return CAMEL_PATTERN_2.sub(r'\1 \2', label)
+
+def sanitize_label(label):
+    # handle some special cases
+    label = label.replace('\n', ' ').replace('\r', '')
+    label = label.replace('(s)', 's').replace('&', 'and').strip()
+    label = re.sub(' +', ' ', label)
+    # turn any non alphanumeric characters into whitespace
+    label = NON_ALPHANUM.sub(' ', label)
+    label = label.strip()
+    # remove single character parts
+    label = " ".join([part for part in label.split() if len(part) > 1])
+    # handle camel case
+    label = _camel_to_white(label)
+    # make all lower case
+    label = label.lower()
+    return label
+
+def calculate_precision_recall_f1_SVM_BERT(true_list, prediction_list):
+    intersection_num = len(list(set(true_list).intersection(set(prediction_list))))
+    recall = intersection_num/len(true_list)
+    if len(prediction_list)!=0:
+        precision = intersection_num/len(prediction_list)
+        if (precision+recall)!= 0:
+            f1 = (2*precision*recall)/(precision+recall)
+            return precision, recall, f1
+        return precision, recall, 0
+    else:
+        precision = 0
+        if (precision+recall)!= 0:
+            f1 = (2*precision*recall)/(precision+recall)
+            return precision, recall, f1
+        return precision, recall, 0
+
+def evaluate_constraints(test_case_names, 
+                         path_to_true_constraints, 
+                         path_to_pred_constraints,
+                         MODEL_NAME=None,
+                         group_constraint_types=None,
+                         unseen_model_case_names=None,
+                         xsemad_threshold=None,
+                         constraints_of_interest = ['Alternate Precedence',
+                                                    'Alternate Response',
+                                                    'Alternate Succession',
+                                                    'Choice',
+                                                    'Co-Existence',
+                                                    'End',
+                                                    'Exclusive Choice',
+                                                    'Init',
+                                                    'Precedence',
+                                                    'Response',
+                                                    'Succession']):
+    evaluation_results = []
+    model_type = MODEL_NAME.split('_')[0]
+
+    pred_file_type = os.listdir(path_to_pred_constraints)[0].split('.')[1]
+
+    if unseen_model_case_names:
+        test_case_names=[item for item in unseen_model_case_names if item in test_case_names]
+    for model_case_name in tqdm(test_case_names, desc='process evaluation'):
+        # Load true constraints
+        with open(f'{path_to_true_constraints}/{model_case_name}.CONSTRAINTS.pkl','rb') as f:
+            true_constraints = pickle.load(f)
+            all_constraint_types_in_model = list(set([i.split('[')[0] for i in true_constraints]))
+            true_constraints = sort_constraints(true_constraints, remove_duplicates=True)
+        
+        
+        # Load predictions
+        # PREDICTION
+        path_to_pred_file = f'{path_to_pred_constraints}/{model_case_name}.{pred_file_type}'
+        
+        if model_type in ['SVM', 'BERT']:
+            with open(path_to_pred_file, 'rb') as f:
+                pred_pairs_temp = pickle.load(f)
+            #get only eventually-follows constraints
+            true_pairs = [i for i in true_constraints if (list(filter(i.startswith, group_constraint_types)) != [])] 
+            true_pairs = [sanitize_label(i.split('[')[1][:-1]) for i in true_pairs]
+            pred_pairs = [sanitize_label(', '.join(i).lower()) for i in list(pred_pairs_temp)]
+            if len(true_pairs)>0:
+                precision, recall, f1 = calculate_precision_recall_f1_SVM_BERT(true_list=list(set(true_pairs)), prediction_list=list(set(pred_pairs)))
+                evaluation_results.append({'constraint_type':', '.join(group_constraint_types), 'model':MODEL_NAME, 'precision':precision,'recall':recall,'f1':f1, 'case_name':model_case_name})
+                
+
+        else:
+            if pred_file_type in ['json']:
+                with open(path_to_pred_file) as f:
+                    mineful_constraints_json=json.load(f)
+                pred_pairs_temp = sort_constraints(format_minerful_constraints(mineful_constraints_json), remove_duplicates=True)
+            if pred_file_type in ['pkl','pickle']:
+                with open(path_to_pred_file, 'rb') as f:
+                    pred_pairs_temp = pickle.load(f)#pred_pairs_temp = sort_constraints(pickle.load(f), remove_duplicates=True)
+                    # For XSEMAD, filter predictions based on the threshold
+                    if xsemad_threshold is not None:
+                        pred_pairs_temp = [item for sublist in pred_pairs_temp for item in sublist[1]]
+                        pred_pairs_temp = [i for i in pred_pairs_temp if i[1] > xsemad_threshold]  # Apply threshold filtering
+                # Assuming pred_pairs_temp structure adjustment for XSEMAD predictions is needed
+                pred_pairs_temp = sort_constraints([i[0] for i in pred_pairs_temp], remove_duplicates=True) if xsemad_threshold is not None else sort_constraints(pred_pairs_temp, remove_duplicates=True)
+
+
+            if group_constraint_types is not None:
+                true_pairs=[]
+                pred_pairs=[]
+                for c in constraints_of_interest:
+                    if c in group_constraint_types:
+                        true_pairs_ = [i.split('[')[1][:-1] for i in true_constraints if i.startswith(c+ '[') ]
+                        true_pairs+=true_pairs_
+                        pred_pairs_ = [i.split('[')[1][:-1] for i in pred_pairs_temp if i.startswith(c+ '[')] 
+                        pred_pairs+=pred_pairs_
+                if len(true_pairs)>0:
+                    precision, recall, f1 = calculate_precision_recall_f1(true_list=list(set(true_pairs)), prediction_list=list(set(pred_pairs)))
+                    evaluation_results.append({'constraint_type':', '.join(group_constraint_types), 'model':MODEL_NAME, 'precision':precision,'recall':recall,'f1':f1, 'case_name':model_case_name})
+            else:
+                for c in constraints_of_interest:
+                    true_pairs=[]
+                    pred_pairs=[]
+                    if c in all_constraint_types_in_model:
+                        true_pairs = [i.split('[')[1][:-1] for i in true_constraints if i.startswith(c+ '[') ]
+                        pred_pairs = [i.split('[')[1][:-1] for i in pred_pairs_temp if i.startswith(c+ '[')] 
+                        if len(true_pairs)>0:
+                            precision, recall, f1 = calculate_precision_recall_f1(true_list=list(set(true_pairs)), prediction_list=list(set(pred_pairs)))
+                            evaluation_results.append({'constraint_type':c, 'model':MODEL_NAME, 'precision':precision,'recall':recall,'f1':f1, 'case_name':model_case_name})
+    return evaluation_results
