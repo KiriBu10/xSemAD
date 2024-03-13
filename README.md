@@ -38,7 +38,13 @@ Add the files from the Caspary2023 folder to that repository. Make sure to adapt
 
 
 ## Project Organization
-    ├── caspary2023                        <- Source code for SVM/BERT.
+    ├── caspary2023                             <- Source code for SVM/BERT.
+    │   ├ 00_paper_generate_logs.py             <- Script to generate event logs
+    │   ├ 01_paper_generate_pairs_kb.py         <- Script to generate the knowledgebase 
+    │   ├ 02_paper_generate_noisy_test_logs.py  <- Script to noisy test event logs 
+    │   ├ 03_paper_train_models_run_eval.py     <- Train the models 
+    │   ├ 04_paper_predict_test_main_bert.py    <- Script to generate bert predictions on testset 
+    │   ├ 04_paper_predict_test_main_svm.py     <- Script to generate svm predictions on testset 
     ├── constraints-transformer
     │   ├── conversion                     <- Contains bpmn analyzer, json2petrinet, and petrinet analyzer.    
     │   ├── evaluation                     <- contains utility functions for evaluation.
