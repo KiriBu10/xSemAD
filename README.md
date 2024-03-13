@@ -38,18 +38,18 @@ Add the files from the Caspary2023 folder to that repository. Make sure to adapt
 
 
 ## Project Organization
-    ├── caspary2023                             <- Source code for SVM/BERT.
-    │   ├ 00_paper_generate_logs.py             <- Script to generate event logs
-    │   ├ 01_paper_generate_pairs_kb.py         <- Script to generate the knowledgebase 
-    │   ├ 02_paper_generate_noisy_test_logs.py  <- Script to noisy test event logs 
-    │   ├ 03_paper_train_models_run_eval.py     <- Train the models 
-    │   ├ 04_paper_predict_test_main_bert.py    <- Script to generate bert predictions on testset 
-    │   ├ 04_paper_predict_test_main_svm.py     <- Script to generate svm predictions on testset 
+    ├── caspary2023                                      <- Source code for SVM/BERT.
+    │   ├ 00_paper_generate_logs.py                      <- Script to generate event logs
+    │   ├ 01_paper_generate_pairs_kb.py                  <- Script to generate the knowledgebase 
+    │   ├ 02_paper_generate_noisy_test_logs.py           <- Script to noisy test event logs 
+    │   ├ 03_paper_train_models_run_eval.py              <- Train the models 
+    │   ├ 04_paper_predict_test_main_bert.py             <- Script to generate bert predictions on testset 
+    │   └ 04_paper_predict_test_main_svm.py              <- Script to generate svm predictions on testset 
     ├── constraints-transformer
-    │   ├── conversion                     <- Contains bpmn analyzer, json2petrinet, and petrinet analyzer.    
-    │   ├── evaluation                     <- contains utility functions for evaluation.
-    │   ├── labelparser                    <- contains utility functions for label parsing.
-    │   ├── results                        <- Figures for the paper.
+    │   ├── conversion                                   <- Contains bpmn analyzer, json2petrinet, and petrinet analyzer.    
+    │   ├── evaluation                                   <- contains utility functions for evaluation.
+    │   ├── labelparser                                  <- contains utility functions for label parsing.
+    │   ├── results                                      <- Figures for the paper.
     │   ├ 00_run_preprocess_sapsam.py                    <- Script to preprocess the sapsam dataset.
     │   ├ 01_run_paper_preprocessing_data.py             <- Script to generate train,test, and validatrion set
     │   ├ 02_run_training.py                             <- Script to fine-tune FLAN-T5 
@@ -60,9 +60,9 @@ Add the files from the Caspary2023 folder to that repository. Make sure to adapt
     │   ├ 10_paper_plots.ipynb                           <- Script to generate the PAPER PLOTS
     │   ├ 10_paper_paper_results.ipynb                   <- Script go generate the PAPER RESULTS
     │   ├ config.py                                      <- config file 
-    │   ├ requirements.txt                               <- requirements file
-    ├── README.md                           <- The top-level README for users of this project.
-    ├── LICENSE                             <- License that applies to the source code in this repository.
+    │   └ requirements.txt                               <- requirements file
+    ├── README.md                                        <- The top-level README for users of this project.
+    └── LICENSE                                          <- License that applies to the source code in this repository.
     
 
 ## Contact
