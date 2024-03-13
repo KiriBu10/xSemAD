@@ -1,5 +1,5 @@
 # xSemAD: Explainable Semantic Anomaly Detection in Event Logs Using Sequence-to-Sequence Models
-This repository contains the prototype of the approach, evaluation, and data as described in xSemAD: Explainable Semantic Anomaly Detection in Event Logs Using Sequence-to-Sequence Models. Under submission for the 2024 International Conference on Business Process Management (BPM 2024). 
+This repository contains the prototype of the approach and evaluation as described in xSemAD: Explainable Semantic Anomaly Detection in Event Logs Using Sequence-to-Sequence Models. Under submission for the 2024 International Conference on Business Process Management (BPM 2024). 
 
 ## About the project
 The identification of undesirable behavior in event logs is an important aspect of process mining that is often addressed by anomaly detection methods. 
