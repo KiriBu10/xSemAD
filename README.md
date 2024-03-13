@@ -24,7 +24,7 @@ pip install -r requirements.txt
 Make sure to adapt all path file names to your needs.
 ### To apply SVM or BERT from Caspary et al. 2023
 Use at least ![python](https://img.shields.io/badge/python-black?logo=python&label=3.7.16)
-1. clone this project <code>git clone</code> to get the repository
+1. clone [this](https://gitlab.uni-mannheim.de/processanalytics/ml-semantic-anomaly-dection) project <code>git clone</code> to get the repository
 2. install the requirements in the ml-semantic-anomaly-detection folder with 
 ```sh
 pip install -r requirements.txt
