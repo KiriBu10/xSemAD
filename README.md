@@ -59,6 +59,8 @@ Add the files from the Caspary2023 folder to that repository. Make sure to adapt
     │   ├ 09_run_minerful.py                             <- Script to run MINERful
     │   ├ 10_paper_plots.ipynb                           <- Script to generate the PAPER PLOTS
     │   ├ 10_paper_paper_results.ipynb                   <- Script go generate the PAPER RESULTS
+    │   ├ 10_paper_computational_time.ipynb              <- Computation time of the methods
+    │   ├ 10_paper_xSemAD_realworld.ipynb                <- xSemAD applied on a real world event log
     │   ├ config.py                                      <- config file 
     │   └ requirements.txt                               <- requirements file
     ├── README.md                                        <- The top-level README for users of this project.
