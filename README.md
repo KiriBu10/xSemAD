@@ -70,7 +70,7 @@ https://zenodo.org/records/13739241
     
 
 ## Contact
-kiranbusch@t-online.de
+kiranbusch(at)t-online.de
 
 ## Cite (BibTeX)
 ```
