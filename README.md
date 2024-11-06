@@ -70,7 +70,17 @@ https://zenodo.org/records/13739241
     
 
 ## Contact
+kiranbusch@t-online.de
 
+## Cite
+@inproceedings{busch2024xsemad,
+  title={xSemAD: Explainable Semantic Anomaly Detection in Event Logs Using Sequence-to-Sequence Models},
+  author={Busch, Kiran and Kampik, Timotheus and Leopold, Henrik},
+  booktitle={International Conference on Business Process Management},
+  pages={309--327},
+  year={2024},
+  organization={Springer}
+}
 
 ## Find a bug?
 If you found an issue or would like to submit an improvement to this project, please contact the authors. 
