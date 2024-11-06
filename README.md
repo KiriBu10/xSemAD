@@ -73,7 +73,7 @@ https://zenodo.org/records/13739241
 kiranbusch@t-online.de
 
 ## Cite (BibTeX)
-```sh
+```
 @inproceedings{busch2024xsemad,
   title={xSemAD: Explainable Semantic Anomaly Detection in Event Logs Using Sequence-to-Sequence Models},
   author={Busch, Kiran and Kampik, Timotheus and Leopold, Henrik},
