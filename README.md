@@ -36,6 +36,8 @@ pip install -r requirements_gpu.txt
 Look [here](https://gitlab.uni-mannheim.de/processanalytics/ml-semantic-anomaly-dection) for more details.
 Add the files from the Caspary2023 folder to that repository. Make sure to adapt all path file names to your needs.
 
+## Dataset
+https://zenodo.org/records/13739241
 
 ## Project Organization
     ├── caspary2023                                      <- Source code for SVM/BERT.
