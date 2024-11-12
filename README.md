@@ -39,6 +39,14 @@ Add the files from the Caspary2023 folder to that repository. Make sure to adapt
 ## Dataset
 https://zenodo.org/records/13739241
 
+## Input format
+```sh
+<constraint type>: <event> <event name> ... <event> <event name>
+example:
+Init: <event> receive application <event> check application <event> approve application <event> reject application ...
+
+```
+
 ## Project Organization
     ├── caspary2023                                      <- Source code for SVM/BERT.
     │   ├ 00_paper_generate_logs.py                      <- Script to generate event logs
